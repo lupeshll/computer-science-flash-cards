@@ -49,10 +49,10 @@ def close_db(error):
 
 # Uncomment and use this to initialize database, then comment it
 #   You can rerun it to pave the database and start over
-@app.route('/initdb')
-def initdb():
-     init_db()
-     return 'Initialized the database.'
+# @app.route('/initdb')
+# def initdb():
+#      init_db()
+#      return 'Initialized the database.'
 
 
 @app.route('/')
@@ -61,6 +61,16 @@ def index():
         return redirect(url_for('general'))
     else:
         return redirect(url_for('login'))
+
+
+#
+@app.route('/compilador')
+def compilador():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+   
+    return render_template('compilador.html')
+#
 
 
 @app.route('/cards')
@@ -114,7 +124,7 @@ def add_card():
                 request.form['back']
                 ])
     db.commit()
-    flash('New card was successfully added.')
+    flash('El nuevo flash card se ha añadido con éxito.')
     return redirect(url_for('cards'))
 
 
@@ -157,7 +167,7 @@ def edit_card():
                 request.form['card_id']
                 ])
     db.commit()
-    flash('Card saved.')
+    flash('Flash Card guardada.')
     return redirect(url_for('cards'))
 
 
@@ -168,7 +178,7 @@ def delete(card_id):
     db = get_db()
     db.execute('DELETE FROM cards WHERE id = ?', [card_id])
     db.commit()
-    flash('Card deleted.')
+    flash('Flash Card eliminada.')
     return redirect(url_for('cards'))
 
 
@@ -188,6 +198,7 @@ def code(card_id=None):
     return memorize("code", card_id)
 
 
+
 def memorize(card_type, card_id):
     if card_type == "general":
         type = 1
@@ -201,7 +212,7 @@ def memorize(card_type, card_id):
     else:
         card = get_card(type)
     if not card:
-        flash("You've learned all the " + card_type + " cards.")
+        flash("Has aprendido todas las " + card_type + " cards.")
         return redirect(url_for('cards'))
     short_answer = (len(card['back']) < 75)
     return render_template('memorize.html',
@@ -251,7 +262,7 @@ def mark_known(card_id, card_type):
     db = get_db()
     db.execute('UPDATE cards SET known = 1 WHERE id = ?', [card_id])
     db.commit()
-    flash('Card marked as known.')
+    flash('Flash card marcada como aprendida.')
     return redirect(url_for(card_type))
 
 
@@ -273,7 +284,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
-    flash("You've logged out")
+    flash("Has cerrado la sesión")
     return redirect(url_for('index'))
 
 
